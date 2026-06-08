@@ -409,20 +409,6 @@ body {
   margin-bottom: 20px;
   display: none;
 }
-.btn-reiniciar {
-  display: inline-block;
-  padding: 12px 32px;
-  background: var(--azul);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform .18s;
-}
-.btn-reiniciar:hover { transform: scale(1.04); }
 
 /* ════════════════════════════════════════
    TOAST
@@ -547,7 +533,6 @@ body {
     <div class="resultado-nota" id="res-nota">0 / 10</div>
     <div class="resultado-mensagem" id="res-msg"></div>
     <div class="resultado-email-status" id="res-email-status"></div>
-    <button class="btn-reiniciar" onclick="location.reload()">🔄 Fazer Novamente</button>
   </div>
 </div>
 
@@ -912,7 +897,7 @@ function mostrarToast(msg, dur) {
 
 /* ── FINALIZAR ─────────────────────────────────────────────────────────── */
 function finalizarAtividade() {
-  // 🔧 CORREÇÃO BUG 4: Validação de turma antes de prosseguir
+  // 🔧 Validação de turma antes de prosseguir
   var turma = document.getElementById('sel-turma').value;
   if (!turma) {
     mostrarToast('⚠️ Selecione a turma antes de enviar!');
@@ -974,7 +959,6 @@ function finalizarAtividade() {
       fb.className = 'feedback certa';
       fb.innerHTML = '<strong>✅ Correto!</strong> ' + q.comentario;
     } else {
-      /* CORREÇÃO: gabarito inline, sem quebra de linha */
       fb.className = 'feedback errada';
       fb.innerHTML = '<strong>❌ Incorreto.</strong> A resposta correta é <strong class="inline">' + q.gabarito + '</strong>. ' + q.comentario;
     }
@@ -1034,8 +1018,7 @@ function exibirResultado(acertos, nota) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   🔧 CORREÇÃO BUG 5: REMOVIDO o fetch no-cors que causava DUPLO REGISTRO.
-   Agora usa APENAS JSONP para enviar e receber confirmação.
+   ENVIO ÚNICO VIA JSONP — sem reenvio permitido
 ══════════════════════════════════════════════════════════════════════ */
 function enviarParaScript(payload) {
   var statusEl = document.getElementById('res-email-status');
@@ -1048,20 +1031,20 @@ function enviarParaScript(payload) {
 
   var json = JSON.stringify(payload);
 
-  // 🔧 CORREÇÃO BUG 6: btoa envolvido em try/catch para navegadores antigos
+  // btoa envolvido em try/catch para navegadores antigos
   var b64;
   try {
     b64 = btoa(unescape(encodeURIComponent(json)));
   } catch(e) {
     statusEl.style.background = '#fde8e8';
     statusEl.style.color      = '#6b1010';
-    statusEl.textContent      = '❌ Erro ao codificar dados: ' + e.message;
-    btnFinal.textContent      = '⚠️ Erro';
-    btnFinal.disabled         = false;
+    statusEl.textContent      = '❌ Erro ao codificar dados. Contate o professor.';
+    btnFinal.textContent      = '⛔ Enviado (erro local)';
+    // 🔒 BLOQUEIO: botão permanece desabilitado — sem reenvio
     return;
   }
 
-  // 🔧 CORREÇÃO BUG 5: Chama JSONP diretamente, sem fetch no-cors duplicado
+  // Chama JSONP diretamente, sem fetch no-cors duplicado
   confirmarViaJsonp(b64, statusEl, btnFinal, payload);
 }
 
@@ -1081,15 +1064,15 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
       statusEl.style.background = '#d4f5e2';
       statusEl.style.color      = '#0a3d22';
       statusEl.textContent      = '✅ Resultado registrado! E-mail enviado para ' + payload.studentEmail;
-      btnFinal.textContent      = '✅ Enviado!';
+      btnFinal.textContent      = '✅ Atividade enviada';
     } else {
       statusEl.style.background = '#fde8e8';
       statusEl.style.color      = '#6b1010';
-      statusEl.textContent      = '⚠️ Erro: ' + (resp && resp.message ? resp.message : 'resposta inválida');
-      btnFinal.textContent      = '⚠️ Erro no envio';
-      btnFinal.disabled         = false;
+      statusEl.textContent      = '⚠️ Erro no servidor. Contate o professor.';
+      btnFinal.textContent      = '⛔ Envio concluído (erro no servidor)';
       console.error('Apps Script retornou:', resp);
     }
+    // 🔒 BLOQUEIO: botão permanece desabilitado — sem reenvio em nenhum caso
   };
 
   var tag   = document.createElement('script');
@@ -1101,11 +1084,11 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
       delete window[cbName];
       statusEl.style.background = '#fff3cd';
       statusEl.style.color      = '#856404';
-      statusEl.textContent      = '⚠️ Falha na conexão. Verifique sua internet e tente novamente.';
-      btnFinal.textContent      = '⚠️ Falha — tente novamente';
-      btnFinal.disabled         = false;
+      statusEl.textContent      = '⚠️ Envio realizado, mas não foi possível confirmar. Contate o professor.';
+      btnFinal.textContent      = '⛔ Envio concluído';
       console.warn('JSONP onerror — possível bloqueio institucional SEDUC-SP.');
     }
+    // 🔒 BLOQUEIO: botão permanece desabilitado — sem reenvio
   };
   document.head.appendChild(tag);
 
@@ -1116,10 +1099,10 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
       if (window[cbName]) delete window[cbName];
       statusEl.style.background = '#fff3cd';
       statusEl.style.color      = '#856404';
-      statusEl.textContent      = '⏱️ Servidor demorou a responder. Verifique a planilha manualmente.';
-      btnFinal.textContent      = '⏱️ Timeout — tente novamente';
-      btnFinal.disabled         = false;
+      statusEl.textContent      = '⏱️ Servidor demorou a responder. Contate o professor para confirmar.';
+      btnFinal.textContent      = '⛔ Envio concluído (timeout)';
     }
+    // 🔒 BLOQUEIO: botão permanece desabilitado — sem reenvio
   }, 25000);
 }
 
