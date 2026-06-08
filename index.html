@@ -103,7 +103,6 @@ body {
   padding: 20px 20px 18px;
 }
 
-/* Turma: largura automática conforme conteúdo */
 .ficha-turma {
   display: inline-block;
   margin-bottom: 10px;
@@ -113,7 +112,6 @@ body {
   min-width: 160px;
 }
 
-/* Linha 1: Nome + Nº + Série */
 .ficha-linha1 {
   display: grid;
   grid-template-columns: 1fr 80px auto;
@@ -126,7 +124,6 @@ body {
   min-width: 90px;
   white-space: nowrap;
 }
-/* Linha 2: Data + E-mail */
 .ficha-linha2 {
   display: grid;
   grid-template-columns: 160px 1fr;
@@ -167,7 +164,6 @@ body {
   cursor: default;
 }
 
-/* Título da atividade */
 .ficha-titulo {
   text-align: center;
   padding: 10px 0 2px;
@@ -312,6 +308,7 @@ body {
 .alt-btn.errada   .letra-badge { background: var(--vermelho); }
 .alt-btn.gabarito-revelado .letra-badge { background: var(--verde); }
 
+/* ── CORREÇÃO: feedback sem quebra de linha no gabarito ── */
 .feedback {
   display: none;
   margin-top: 12px;
@@ -327,7 +324,10 @@ body {
 }
 .feedback.certa  { background: var(--verde-claro); border: 1.5px solid var(--verde);    color: #0a3d22; }
 .feedback.errada { background: var(--verm-claro);  border: 1.5px solid var(--vermelho); color: #6b1010; }
-.feedback strong { display: block; margin-bottom: 2px; font-size: .87rem; }
+
+/* CORREÇÃO: strong do título fica block; strong inline fica inline */
+.feedback > strong:first-child { display: block; margin-bottom: 4px; font-size: .87rem; }
+.feedback strong.inline        { display: inline; }
 
 /* ════════════════════════════════════════
    BOTÃO FINALIZAR
@@ -472,7 +472,6 @@ body {
     <div class="topo-logo">🏫</div>
     <div class="topo-texto">
       <div class="topo-escola-nome">E.E. PROFª LYDIA KITZ MOREIRA</div>
-
     </div>
   </div>
 </header>
@@ -481,7 +480,6 @@ body {
 <div class="ficha-wrap">
   <div class="ficha">
 
-    <!-- Linha 1: Nome | Nº | Série -->
     <div class="ficha-turma">
       <div class="campo">
         <label for="sel-turma">Turma</label>
@@ -511,7 +509,6 @@ body {
       </div>
     </div>
 
-    <!-- Linha 2: Data | E-mail -->
     <div class="ficha-linha2">
       <div class="campo">
         <label for="inp-data">Data</label>
@@ -523,7 +520,6 @@ body {
       </div>
     </div>
 
-    <!-- Título -->
     <div class="ficha-titulo">
       <h2>Atividade de Ciências — Revisão Prova Paulista</h2>
       <p>Leia cada questão com atenção. Ao finalizar, clique em "Enviar Atividade".</p>
@@ -533,9 +529,7 @@ body {
 </div>
 
 <!-- ══ QUESTÕES ══════════════════════════════════════════════════════════ -->
-<div class="questoes-wrap" id="questoes-wrap">
-  <!-- Renderizado pelo JS -->
-</div>
+<div class="questoes-wrap" id="questoes-wrap"></div>
 
 <!-- ══ BOTÃO FINALIZAR ═══════════════════════════════════════════════════ -->
 <div class="btn-finalizar-wrap" id="wrap-btn-finalizar">
@@ -566,8 +560,8 @@ body {
 <script>
 'use strict';
 
-/* ── URL do Web App Apps Script ───────────────────────────────────────── */
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyERmYA0s2pKTrz47WrXoP52JVcfZL0pnJwyTwBdC_rpfzi5e3xx24pXfZTSUnAEuZB/exec"; // ← substitua pela URL publicada
+/* ── ⚠️  SUBSTITUA PELA URL DO SEU WEB APP PUBLICADO NO APPS SCRIPT ──── */
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyERmYA0s2pKTrz47WrXoP52JVcfZL0pnJwyTwBdC_rpfzi5e3xx24pXfZTSUnAEuZB/exec";
 
 /* ── DADOS DOS ALUNOS ─────────────────────────────────────────────────── */
 var TURMAS = {
@@ -679,7 +673,7 @@ var QUESTOES = [
       {l:"C", t:"Atmosfera."},
       {l:"D", t:"Hidrosfera."}
     ],
-    comentario:"A <strong>Biosfera</strong> é o conjunto de todas as regiões da Terra habitáveis por seres vivos — do fundo dos oceanos ao alto das montanhas."
+    comentario:"A <strong class=\"inline\">Biosfera</strong> é o conjunto de todas as regiões da Terra habitáveis por seres vivos — do fundo dos oceanos ao alto das montanhas."
   },
   {
     num:22, hab:"EF06CI11",
@@ -692,7 +686,7 @@ var QUESTOES = [
       {l:"C", t:"Oxigênio."},
       {l:"D", t:"Flúor."}
     ],
-    comentario:"O <strong>Oxigênio (O₂)</strong>, com cerca de 21% da atmosfera, é o segundo gás mais abundante e essencial para a respiração dos seres vivos."
+    comentario:"O <strong class=\"inline\">Oxigênio (O₂)</strong>, com cerca de 21% da atmosfera, é o segundo gás mais abundante e essencial para a respiração dos seres vivos."
   },
   {
     num:23, hab:"EF06CI11",
@@ -705,7 +699,7 @@ var QUESTOES = [
       {l:"C", t:"Camada de subducção."},
       {l:"D", t:"Camada de ozônio."}
     ],
-    comentario:"A <strong>Camada de Ozônio</strong> está localizada na estratosfera e protege a Terra dos raios UV prejudiciais."
+    comentario:"A <strong class=\"inline\">Camada de Ozônio</strong> está localizada na estratosfera e protege a Terra dos raios UV prejudiciais."
   },
   {
     num:24, hab:"EF06CI11",
@@ -718,7 +712,7 @@ var QUESTOES = [
       {l:"C", t:"Sólido, líquido e plasma."},
       {l:"D", t:"Sólido, plasma e gasoso."}
     ],
-    comentario:"A água existe nos 3 estados: <strong>sólido</strong> (gelo/neve), <strong>líquido</strong> (rios e mares) e <strong>gasoso</strong> (vapor na atmosfera)."
+    comentario:"A água existe nos 3 estados: <strong class=\"inline\">sólido</strong> (gelo/neve), <strong class=\"inline\">líquido</strong> (rios e mares) e <strong class=\"inline\">gasoso</strong> (vapor na atmosfera)."
   },
   {
     num:25, hab:"EF04CI02",
@@ -731,7 +725,7 @@ var QUESTOES = [
       {l:"C", t:"Solidificação."},
       {l:"D", t:"Vaporização."}
     ],
-    comentario:"<strong>Vaporização</strong> é a passagem do estado líquido para o gasoso. A água da blusa evaporou e ela secou."
+    comentario:"<strong class=\"inline\">Vaporização</strong> é a passagem do estado líquido para o gasoso. A água da blusa evaporou e ela secou."
   },
   {
     num:26, hab:"EF06CI11",
@@ -744,7 +738,7 @@ var QUESTOES = [
       {l:"C", t:"Redução da quantidade de lixo nos rios."},
       {l:"D", t:"Aumento das chuvas."}
     ],
-    comentario:"Sem árvores, há menos <strong>evapotranspiração</strong> (liberação de vapor pelas plantas), reduzindo a formação de nuvens e chuvas."
+    comentario:"Sem árvores, há menos <strong class=\"inline\">evapotranspiração</strong> (liberação de vapor pelas plantas), reduzindo a formação de nuvens e chuvas."
   },
   {
     num:27, hab:"EF06CI06",
@@ -757,7 +751,7 @@ var QUESTOES = [
       {l:"C", t:"Ciclo da água."},
       {l:"D", t:"Ciclo do oxigênio."}
     ],
-    comentario:"O <strong>Ciclo da Água</strong> (ou ciclo hidrológico) descreve o movimento contínuo da água entre a superfície terrestre e a atmosfera."
+    comentario:"O <strong class=\"inline\">Ciclo da Água</strong> (ou ciclo hidrológico) descreve o movimento contínuo da água entre a superfície terrestre e a atmosfera."
   },
   {
     num:28, hab:"EF06CI12",
@@ -770,7 +764,7 @@ var QUESTOES = [
       {l:"C", t:"Compostagem."},
       {l:"D", t:"Evaporação."}
     ],
-    comentario:"<strong>Intemperismo</strong> é a desintegração e alteração das rochas por agentes físicos, químicos e biológicos — passo fundamental na formação do solo."
+    comentario:"<strong class=\"inline\">Intemperismo</strong> é a desintegração e alteração das rochas por agentes físicos, químicos e biológicos — passo fundamental na formação do solo."
   },
   {
     num:29, hab:"EF06CI12",
@@ -783,7 +777,7 @@ var QUESTOES = [
       {l:"C", t:"Avenidas amplas."},
       {l:"D", t:"Acúmulo de lixo e entupimento de bueiros."}
     ],
-    comentario:"O <strong>lixo acumulado entope bueiros</strong> e drenos, impedindo a água de escoar e causando alagamentos."
+    comentario:"O <strong class=\"inline\">lixo acumulado entope bueiros</strong> e drenos, impedindo a água de escoar e causando alagamentos."
   },
   {
     num:30, hab:"EF06CI01",
@@ -796,7 +790,7 @@ var QUESTOES = [
       {l:"C", t:"Substância pura simples."},
       {l:"D", t:"Mistura heterogênea."}
     ],
-    comentario:"<strong>Substâncias simples</strong> são formadas por átomos de apenas um elemento químico, como O₂ (oxigênio) e O₃ (ozônio)."
+    comentario:"<strong class=\"inline\">Substâncias simples</strong> são formadas por átomos de apenas um elemento químico, como O₂ (oxigênio) e O₃ (ozônio)."
   }
 ];
 
@@ -924,29 +918,35 @@ function finalizarAtividade() {
     return;
   }
 
-  // Verificar questões não respondidas
+  /* Verificar URL configurada */
+  if (!SCRIPT_URL || SCRIPT_URL === 'COLE_AQUI_A_URL_DO_WEB_APP') {
+    mostrarToast('⚠️ URL do servidor não configurada. Contate o professor.', 5000);
+    console.error('SCRIPT_URL não foi configurada. Substitua o placeholder pela URL do Web App publicado no Apps Script.');
+    return;
+  }
+
+  /* Verificar questões não respondidas */
   var naoRespondidas = QUESTOES.filter(function(q) { return !respostas[q.num]; });
   if (naoRespondidas.length > 0) {
     var nums = naoRespondidas.map(function(q) { return 'Q' + q.num; }).join(', ');
     mostrarToast('⚠️ Responda ainda: ' + nums, 4000);
-    // Scroll para primeira sem resposta
     var primeiraCard = document.getElementById('card-' + naoRespondidas[0].num);
     if (primeiraCard) primeiraCard.scrollIntoView({behavior:'smooth', block:'center'});
     return;
   }
 
   finalizado = true;
-  document.getElementById('btn-finalizar').disabled = true;
-  document.getElementById('btn-finalizar').textContent = '⏳ Enviando...';
+  var btnFinalizar = document.getElementById('btn-finalizar');
+  btnFinalizar.disabled = true;
+  btnFinalizar.textContent = '⏳ Enviando...';
 
-  // Calcular resultado
+  /* Calcular resultado e mostrar feedback visual */
   var acertos = 0;
   QUESTOES.forEach(function(q) {
-    var resp = respostas[q.num];
+    var resp   = respostas[q.num];
     var acertou = resp === q.gabarito;
     if (acertou) acertos++;
 
-    // Mostrar feedback visual
     q.alts.forEach(function(a) {
       var btn = document.getElementById('alt-' + q.num + '-' + a.l);
       btn.classList.add('bloqueada');
@@ -966,20 +966,19 @@ function finalizarAtividade() {
       fb.className = 'feedback certa';
       fb.innerHTML = '<strong>✅ Correto!</strong> ' + q.comentario;
     } else {
+      /* CORREÇÃO: gabarito inline, sem quebra de linha */
       fb.className = 'feedback errada';
-      fb.innerHTML = '<strong>❌ Incorreto.</strong> A resposta correta é <strong>' + q.gabarito + '</strong>. ' + q.comentario;
+      fb.innerHTML = '<strong>❌ Incorreto.</strong> A resposta correta é <strong class="inline">' + q.gabarito + '</strong>. ' + q.comentario;
     }
   });
 
-  var nota = Math.round((acertos / QUESTOES.length) * 10 * 10) / 10;
-  var turma = document.getElementById('sel-turma').value;
+  var nota    = Math.round((acertos / QUESTOES.length) * 10 * 10) / 10;
+  var turma   = document.getElementById('sel-turma').value;
   var dataVal = document.getElementById('inp-data').value;
   var dataFmt = dataVal ? dataVal.split('-').reverse().join('/') : '';
 
-  // Exibir resultado
   exibirResultado(acertos, nota);
 
-  // Enviar para Apps Script
   enviarParaScript({
     sheetName:     '6o' + turma.replace('6','') + ' respostas LKM',
     studentName:   alunoAtual.nome,
@@ -987,15 +986,15 @@ function finalizarAtividade() {
     studentGrade:  '6º Ano ' + turma.replace('6',''),
     date:          dataFmt,
     studentEmail:  alunoAtual.email,
-    q1: respostas[21] || '',
-    q2: respostas[22] || '',
-    q3: respostas[23] || '',
-    q4: respostas[24] || '',
-    q5: respostas[25] || '',
-    q6: respostas[26] || '',
-    q7: respostas[27] || '',
-    q8: respostas[28] || '',
-    q9: respostas[29] || '',
+    q1:  respostas[21] || '',
+    q2:  respostas[22] || '',
+    q3:  respostas[23] || '',
+    q4:  respostas[24] || '',
+    q5:  respostas[25] || '',
+    q6:  respostas[26] || '',
+    q7:  respostas[27] || '',
+    q8:  respostas[28] || '',
+    q9:  respostas[29] || '',
     q10: respostas[30] || '',
     acertos:     acertos,
     nota:        nota,
@@ -1018,8 +1017,8 @@ function exibirResultado(acertos, nota) {
   else if (pct >= .5) { emoji = '👍'; msg = 'Bom desempenho! Continue estudando para melhorar.'; }
   else                { emoji = '📚'; msg = 'Continue estudando! A revisão vai te ajudar na Prova Paulista.'; }
 
-  document.getElementById('res-emoji').textContent = emoji;
-  document.getElementById('res-mensagem').textContent = msg;
+  document.getElementById('res-emoji').textContent    = emoji;
+  document.getElementById('res-msg').textContent      = msg;
 
   document.getElementById('wrap-btn-finalizar').style.display = 'none';
   var telaRes = document.getElementById('tela-resultado');
@@ -1029,54 +1028,61 @@ function exibirResultado(acertos, nota) {
 
 /* ── ENVIAR PARA APPS SCRIPT (JSONP) ──────────────────────────────────── */
 function enviarParaScript(payload) {
-  var cbName = 'cb_' + Date.now();
+  var cbName   = 'cb_' + Date.now();
   var statusEl = document.getElementById('res-email-status');
-  statusEl.style.display = 'block';
-  statusEl.textContent   = '📤 Enviando resultados...';
+  var btnFinal = document.getElementById('btn-finalizar');
 
-  // Base64 encode
-  var json   = JSON.stringify(payload);
-  var b64    = btoa(unescape(encodeURIComponent(json)));
-  var url    = SCRIPT_URL + '?callback=' + cbName + '&data=' + encodeURIComponent(b64);
+  statusEl.style.display    = 'block';
+  statusEl.style.background = '';
+  statusEl.style.color      = '';
+  statusEl.textContent      = '📤 Enviando resultados...';
+
+  var json = JSON.stringify(payload);
+  var b64  = btoa(unescape(encodeURIComponent(json)));
+  var url  = SCRIPT_URL + '?callback=' + cbName + '&data=' + encodeURIComponent(b64);
 
   window[cbName] = function(resp) {
     delete window[cbName];
-    if (document.getElementById('script-' + cbName)) {
-      document.getElementById('script-' + cbName).remove();
-    }
+    var tag = document.getElementById('script-jsonp-' + cbName);
+    if (tag) tag.remove();
+
     if (resp && resp.status === 'ok') {
       statusEl.style.background = '#d4f5e2';
       statusEl.style.color      = '#0a3d22';
-      statusEl.textContent      = '✅ Resultado registrado! Um e-mail foi enviado para ' + alunoAtual.email;
-      document.getElementById('btn-finalizar').textContent = '✅ Enviado!';
+      statusEl.textContent      = '✅ Resultado registrado com sucesso! E-mail enviado para ' + payload.studentEmail;
+      btnFinal.textContent      = '✅ Enviado!';
     } else {
       statusEl.style.background = '#fde8e8';
       statusEl.style.color      = '#6b1010';
-      statusEl.textContent      = '⚠️ Erro ao registrar: ' + (resp ? resp.message : 'sem resposta');
-      document.getElementById('btn-finalizar').textContent = '⚠️ Erro no envio';
+      statusEl.textContent      = '⚠️ Erro ao registrar: ' + (resp && resp.message ? resp.message : 'resposta inválida do servidor');
+      btnFinal.textContent      = '⚠️ Erro no envio';
+      console.error('Resposta do Apps Script:', resp);
     }
   };
 
-  var tag = document.createElement('script');
-  tag.id  = 'script-' + cbName;
-  tag.src = url;
+  var tag   = document.createElement('script');
+  tag.id    = 'script-jsonp-' + cbName;
+  tag.src   = url;
   tag.onerror = function() {
+    if (window[cbName]) delete window[cbName];
     statusEl.style.background = '#fde8e8';
     statusEl.style.color      = '#6b1010';
-    statusEl.textContent      = '⚠️ Não foi possível conectar ao servidor. Verifique a URL do script.';
-    document.getElementById('btn-finalizar').textContent = '⚠️ Erro no envio';
+    statusEl.textContent      = '⚠️ Não foi possível conectar ao servidor. Verifique se a URL do Web App está correta e publicada.';
+    btnFinal.textContent      = '⚠️ Erro no envio';
+    console.error('Falha ao carregar script JSONP. URL:', url);
   };
   document.head.appendChild(tag);
 
-  // Timeout de 15s
+  /* Timeout de 20 segundos */
   setTimeout(function() {
     if (window[cbName]) {
       delete window[cbName];
       statusEl.style.background = '#fff3cd';
       statusEl.style.color      = '#856404';
-      statusEl.textContent      = '⏱️ O servidor demorou a responder. Verifique a planilha manualmente.';
+      statusEl.textContent      = '⏱️ O servidor demorou a responder (timeout). Verifique a planilha manualmente.';
+      btnFinal.textContent      = '⏱️ Timeout';
     }
-  }, 15000);
+  }, 20000);
 }
 
 /* ── INIT ──────────────────────────────────────────────────────────────── */
