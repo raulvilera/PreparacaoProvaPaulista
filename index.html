@@ -1026,9 +1026,8 @@ function exibirResultado(acertos, nota) {
   telaRes.scrollIntoView({behavior: 'smooth'});
 }
 
-/* ── ENVIAR PARA APPS SCRIPT (JSONP) ──────────────────────────────────── */
+/* ── ENVIAR PARA APPS SCRIPT (fetch + JSONP fallback) ─────────────────── */
 function enviarParaScript(payload) {
-  var cbName   = 'cb_' + Date.now();
   var statusEl = document.getElementById('res-email-status');
   var btnFinal = document.getElementById('btn-finalizar');
 
@@ -1039,47 +1038,73 @@ function enviarParaScript(payload) {
 
   var json = JSON.stringify(payload);
   var b64  = btoa(unescape(encodeURIComponent(json)));
-  var url  = SCRIPT_URL + '?callback=' + cbName + '&data=' + encodeURIComponent(b64);
+
+  /* ── Tentativa 1: fetch com mode no-cors (funciona mesmo com redirect institucional) */
+  /* no-cors não retorna corpo — usamos JSONP logo depois para confirmar o registro     */
+  var urlBase = SCRIPT_URL + '?data=' + encodeURIComponent(b64);
+
+  fetch(urlBase + '&callback=noop', { method: 'GET', mode: 'no-cors' })
+    .then(function() {
+      /* fetch no-cors teve sucesso (opaque response) — aguarda 3s e confirma via JSONP */
+      setTimeout(function() { confirmarViaJsonp(b64, statusEl, btnFinal, payload); }, 3000);
+    })
+    .catch(function(err) {
+      console.warn('fetch no-cors falhou, tentando JSONP direto:', err);
+      confirmarViaJsonp(b64, statusEl, btnFinal, payload);
+    });
+}
+
+/* ── Confirmação via JSONP após o fetch no-cors ────────────────────────── */
+function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
+  var cbName = 'cb_' + Date.now();
+  var url    = SCRIPT_URL + '?callback=' + cbName + '&data=' + encodeURIComponent(b64);
+  var done   = false;
 
   window[cbName] = function(resp) {
+    done = true;
     delete window[cbName];
-    var tag = document.getElementById('script-jsonp-' + cbName);
+    var tag = document.getElementById('jsonp-' + cbName);
     if (tag) tag.remove();
 
     if (resp && resp.status === 'ok') {
       statusEl.style.background = '#d4f5e2';
       statusEl.style.color      = '#0a3d22';
-      statusEl.textContent      = '✅ Resultado registrado com sucesso! E-mail enviado para ' + payload.studentEmail;
+      statusEl.textContent      = '✅ Resultado registrado! E-mail enviado para ' + payload.studentEmail;
       btnFinal.textContent      = '✅ Enviado!';
     } else {
       statusEl.style.background = '#fde8e8';
       statusEl.style.color      = '#6b1010';
-      statusEl.textContent      = '⚠️ Erro ao registrar: ' + (resp && resp.message ? resp.message : 'resposta inválida do servidor');
+      statusEl.textContent      = '⚠️ Erro: ' + (resp && resp.message ? resp.message : 'resposta inválida');
       btnFinal.textContent      = '⚠️ Erro no envio';
-      console.error('Resposta do Apps Script:', resp);
+      console.error('Apps Script retornou:', resp);
     }
   };
 
   var tag   = document.createElement('script');
-  tag.id    = 'script-jsonp-' + cbName;
+  tag.id    = 'jsonp-' + cbName;
   tag.src   = url;
   tag.onerror = function() {
-    if (window[cbName]) delete window[cbName];
-    statusEl.style.background = '#fde8e8';
-    statusEl.style.color      = '#6b1010';
-    statusEl.textContent      = '⚠️ Não foi possível conectar ao servidor. Verifique se a URL do Web App está correta e publicada.';
-    btnFinal.textContent      = '⚠️ Erro no envio';
-    console.error('Falha ao carregar script JSONP. URL:', url);
+    if (!done) {
+      done = true;
+      delete window[cbName];
+      /* Se o JSONP falhar mas o fetch no-cors passou, o dado provavelmente foi gravado */
+      statusEl.style.background = '#fff3cd';
+      statusEl.style.color      = '#856404';
+      statusEl.textContent      = '⚠️ Enviado, mas não foi possível confirmar. Verifique a planilha.';
+      btnFinal.textContent      = '⚠️ Confirme na planilha';
+      console.warn('JSONP onerror — possível bloqueio institucional SEDUC-SP.');
+    }
   };
   document.head.appendChild(tag);
 
   /* Timeout de 20 segundos */
   setTimeout(function() {
-    if (window[cbName]) {
-      delete window[cbName];
+    if (!done) {
+      done = true;
+      if (window[cbName]) delete window[cbName];
       statusEl.style.background = '#fff3cd';
       statusEl.style.color      = '#856404';
-      statusEl.textContent      = '⏱️ O servidor demorou a responder (timeout). Verifique a planilha manualmente.';
+      statusEl.textContent      = '⏱️ Servidor demorou a responder. Verifique a planilha manualmente.';
       btnFinal.textContent      = '⏱️ Timeout';
     }
   }, 20000);
