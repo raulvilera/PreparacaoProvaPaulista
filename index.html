@@ -912,6 +912,14 @@ function mostrarToast(msg, dur) {
 
 /* ── FINALIZAR ─────────────────────────────────────────────────────────── */
 function finalizarAtividade() {
+  // 🔧 CORREÇÃO BUG 4: Validação de turma antes de prosseguir
+  var turma = document.getElementById('sel-turma').value;
+  if (!turma) {
+    mostrarToast('⚠️ Selecione a turma antes de enviar!');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    return;
+  }
+
   if (!alunoAtual) {
     mostrarToast('⚠️ Selecione seu nome antes de enviar!');
     window.scrollTo({top: 0, behavior: 'smooth'});
@@ -973,7 +981,6 @@ function finalizarAtividade() {
   });
 
   var nota    = Math.round((acertos / QUESTOES.length) * 10 * 10) / 10;
-  var turma   = document.getElementById('sel-turma').value;
   var dataVal = document.getElementById('inp-data').value;
   var dataFmt = dataVal ? dataVal.split('-').reverse().join('/') : '';
 
@@ -1026,7 +1033,10 @@ function exibirResultado(acertos, nota) {
   telaRes.scrollIntoView({behavior: 'smooth'});
 }
 
-/* ── ENVIAR PARA APPS SCRIPT (fetch + JSONP fallback) ─────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   🔧 CORREÇÃO BUG 5: REMOVIDO o fetch no-cors que causava DUPLO REGISTRO.
+   Agora usa APENAS JSONP para enviar e receber confirmação.
+══════════════════════════════════════════════════════════════════════ */
 function enviarParaScript(payload) {
   var statusEl = document.getElementById('res-email-status');
   var btnFinal = document.getElementById('btn-finalizar');
@@ -1037,24 +1047,25 @@ function enviarParaScript(payload) {
   statusEl.textContent      = '📤 Enviando resultados...';
 
   var json = JSON.stringify(payload);
-  var b64  = btoa(unescape(encodeURIComponent(json)));
 
-  /* ── Tentativa 1: fetch com mode no-cors (funciona mesmo com redirect institucional) */
-  /* no-cors não retorna corpo — usamos JSONP logo depois para confirmar o registro     */
-  var urlBase = SCRIPT_URL + '?data=' + encodeURIComponent(b64);
+  // 🔧 CORREÇÃO BUG 6: btoa envolvido em try/catch para navegadores antigos
+  var b64;
+  try {
+    b64 = btoa(unescape(encodeURIComponent(json)));
+  } catch(e) {
+    statusEl.style.background = '#fde8e8';
+    statusEl.style.color      = '#6b1010';
+    statusEl.textContent      = '❌ Erro ao codificar dados: ' + e.message;
+    btnFinal.textContent      = '⚠️ Erro';
+    btnFinal.disabled         = false;
+    return;
+  }
 
-  fetch(urlBase + '&callback=noop', { method: 'GET', mode: 'no-cors' })
-    .then(function() {
-      /* fetch no-cors teve sucesso (opaque response) — aguarda 3s e confirma via JSONP */
-      setTimeout(function() { confirmarViaJsonp(b64, statusEl, btnFinal, payload); }, 3000);
-    })
-    .catch(function(err) {
-      console.warn('fetch no-cors falhou, tentando JSONP direto:', err);
-      confirmarViaJsonp(b64, statusEl, btnFinal, payload);
-    });
+  // 🔧 CORREÇÃO BUG 5: Chama JSONP diretamente, sem fetch no-cors duplicado
+  confirmarViaJsonp(b64, statusEl, btnFinal, payload);
 }
 
-/* ── Confirmação via JSONP após o fetch no-cors ────────────────────────── */
+/* ── Envio e confirmação via JSONP ─────────────────────────────────────── */
 function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
   var cbName = 'cb_' + Date.now();
   var url    = SCRIPT_URL + '?callback=' + cbName + '&data=' + encodeURIComponent(b64);
@@ -1076,6 +1087,7 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
       statusEl.style.color      = '#6b1010';
       statusEl.textContent      = '⚠️ Erro: ' + (resp && resp.message ? resp.message : 'resposta inválida');
       btnFinal.textContent      = '⚠️ Erro no envio';
+      btnFinal.disabled         = false;
       console.error('Apps Script retornou:', resp);
     }
   };
@@ -1087,17 +1099,17 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
     if (!done) {
       done = true;
       delete window[cbName];
-      /* Se o JSONP falhar mas o fetch no-cors passou, o dado provavelmente foi gravado */
       statusEl.style.background = '#fff3cd';
       statusEl.style.color      = '#856404';
-      statusEl.textContent      = '⚠️ Enviado, mas não foi possível confirmar. Verifique a planilha.';
-      btnFinal.textContent      = '⚠️ Confirme na planilha';
+      statusEl.textContent      = '⚠️ Falha na conexão. Verifique sua internet e tente novamente.';
+      btnFinal.textContent      = '⚠️ Falha — tente novamente';
+      btnFinal.disabled         = false;
       console.warn('JSONP onerror — possível bloqueio institucional SEDUC-SP.');
     }
   };
   document.head.appendChild(tag);
 
-  /* Timeout de 20 segundos */
+  /* Timeout de 25 segundos */
   setTimeout(function() {
     if (!done) {
       done = true;
@@ -1105,9 +1117,10 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
       statusEl.style.background = '#fff3cd';
       statusEl.style.color      = '#856404';
       statusEl.textContent      = '⏱️ Servidor demorou a responder. Verifique a planilha manualmente.';
-      btnFinal.textContent      = '⏱️ Timeout';
+      btnFinal.textContent      = '⏱️ Timeout — tente novamente';
+      btnFinal.disabled         = false;
     }
-  }, 20000);
+  }, 25000);
 }
 
 /* ── INIT ──────────────────────────────────────────────────────────────── */
