@@ -7,9 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
 <style>
-/* ════════════════════════════════════════
-   RESET & VARIÁVEIS
-════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -44,9 +41,6 @@ body {
   min-height: 100vh;
 }
 
-/* ════════════════════════════════════════
-   TOPO DA ESCOLA
-════════════════════════════════════════ */
 .topo-escola {
   background: var(--azul);
   color: white;
@@ -89,9 +83,6 @@ body {
   margin-top: 1px;
 }
 
-/* ════════════════════════════════════════
-   CABEÇALHO DA ATIVIDADE (ficha)
-════════════════════════════════════════ */
 .ficha-wrap {
   background: white;
   border-bottom: 3px solid var(--azul-claro);
@@ -183,9 +174,6 @@ body {
   margin-top: 3px;
 }
 
-/* ════════════════════════════════════════
-   QUESTÕES
-════════════════════════════════════════ */
 .questoes-wrap {
   max-width: 860px;
   margin: 0 auto;
@@ -308,7 +296,6 @@ body {
 .alt-btn.errada   .letra-badge { background: var(--vermelho); }
 .alt-btn.gabarito-revelado .letra-badge { background: var(--verde); }
 
-/* ── CORREÇÃO: feedback sem quebra de linha no gabarito ── */
 .feedback {
   display: none;
   margin-top: 12px;
@@ -325,13 +312,9 @@ body {
 .feedback.certa  { background: var(--verde-claro); border: 1.5px solid var(--verde);    color: #0a3d22; }
 .feedback.errada { background: var(--verm-claro);  border: 1.5px solid var(--vermelho); color: #6b1010; }
 
-/* CORREÇÃO: strong do título fica block; strong inline fica inline */
 .feedback > strong:first-child { display: block; margin-bottom: 4px; font-size: .87rem; }
 .feedback strong.inline        { display: inline; }
 
-/* ════════════════════════════════════════
-   BOTÃO FINALIZAR
-════════════════════════════════════════ */
 .btn-finalizar-wrap {
   max-width: 860px;
   margin: 0 auto 50px;
@@ -359,9 +342,6 @@ body {
   opacity: .6; cursor: not-allowed; transform: none;
 }
 
-/* ════════════════════════════════════════
-   TELA DE RESULTADO
-════════════════════════════════════════ */
 #tela-resultado {
   display: none;
   max-width: 640px;
@@ -410,9 +390,6 @@ body {
   display: none;
 }
 
-/* ════════════════════════════════════════
-   TOAST
-════════════════════════════════════════ */
 #toast {
   position: fixed;
   bottom: 20px; left: 50%;
@@ -433,9 +410,6 @@ body {
 }
 #toast.show { transform: translateX(-50%) translateY(0); }
 
-/* ════════════════════════════════════════
-   RESPONSIVO
-════════════════════════════════════════ */
 @media (max-width: 600px) {
   .ficha-linha1 { grid-template-columns: 1fr 70px; }
   .ficha-linha1 .campo:first-child { grid-column: 1 / -1; }
@@ -452,7 +426,6 @@ body {
 </head>
 <body>
 
-<!-- ══ TOPO ESCOLA ══════════════════════════════════════════════════════ -->
 <header class="topo-escola">
   <div class="topo-inner">
     <div class="topo-logo">🏫</div>
@@ -462,7 +435,6 @@ body {
   </div>
 </header>
 
-<!-- ══ FICHA DE IDENTIFICAÇÃO ═══════════════════════════════════════════ -->
 <div class="ficha-wrap">
   <div class="ficha">
 
@@ -514,17 +486,14 @@ body {
   </div>
 </div>
 
-<!-- ══ QUESTÕES ══════════════════════════════════════════════════════════ -->
 <div class="questoes-wrap" id="questoes-wrap"></div>
 
-<!-- ══ BOTÃO FINALIZAR ═══════════════════════════════════════════════════ -->
 <div class="btn-finalizar-wrap" id="wrap-btn-finalizar">
   <button class="btn-finalizar" id="btn-finalizar" onclick="finalizarAtividade()">
     ✅ Enviar Atividade
   </button>
 </div>
 
-<!-- ══ TELA RESULTADO ════════════════════════════════════════════════════ -->
 <div id="tela-resultado">
   <div class="resultado-card">
     <div class="resultado-emoji" id="res-emoji">🎉</div>
@@ -536,16 +505,11 @@ body {
   </div>
 </div>
 
-<!-- ══ TOAST ══════════════════════════════════════════════════════════════ -->
 <div id="toast"></div>
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     JAVASCRIPT
-═══════════════════════════════════════════════════════════════════════ -->
 <script>
 'use strict';
 
-/* ── ⚠️  SUBSTITUA PELA URL DO SEU WEB APP PUBLICADO NO APPS SCRIPT ──── */
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyERmYA0s2pKTrz47WrXoP52JVcfZL0pnJwyTwBdC_rpfzi5e3xx24pXfZTSUnAEuZB/exec";
 
 /* ── DADOS DOS ALUNOS ─────────────────────────────────────────────────── */
@@ -645,7 +609,7 @@ var TURMAS = {
   ]
 };
 
-/* ── BANCO DE QUESTÕES ─────────────────────────────────────────────────── */
+/* ── BANCO DE QUESTÕES — num: 21–30 (LKM) ────────────────────────────── */
 var QUESTOES = [
   {
     num:21, hab:"EF06CI11",
@@ -779,18 +743,15 @@ var QUESTOES = [
   }
 ];
 
-/* ── ESTADO DA ATIVIDADE ───────────────────────────────────────────────── */
 var alunoAtual   = null;
 var respostas    = {};
 var finalizado   = false;
 var switchCount  = 0;
 
-/* ── DETECTAR TROCA DE ABA ─────────────────────────────────────────────── */
 document.addEventListener('visibilitychange', function() {
   if (!finalizado && alunoAtual && document.hidden) switchCount++;
 });
 
-/* ── PREENCHER DATA HOJE ───────────────────────────────────────────────── */
 (function() {
   var hoje = new Date();
   var y = hoje.getFullYear();
@@ -799,7 +760,6 @@ document.addEventListener('visibilitychange', function() {
   document.getElementById('inp-data').value = y + '-' + m + '-' + d;
 })();
 
-/* ── MUDANÇA DE TURMA ──────────────────────────────────────────────────── */
 function aoMudarTurma() {
   var turmaId = document.getElementById('sel-turma').value;
   var selAluno = document.getElementById('sel-aluno');
@@ -820,7 +780,6 @@ function aoMudarTurma() {
   });
 }
 
-/* ── SELEÇÃO DE ALUNO ──────────────────────────────────────────────────── */
 function aoSelecionarAluno() {
   var val = document.getElementById('sel-aluno').value;
   if (!val) {
@@ -840,7 +799,6 @@ function aoSelecionarAluno() {
   document.getElementById('wrap-btn-finalizar').style.display = 'block';
 }
 
-/* ── RENDERIZAR QUESTÕES ───────────────────────────────────────────────── */
 function renderQuestoes() {
   var wrap = document.getElementById('questoes-wrap');
   wrap.innerHTML = '';
@@ -874,7 +832,6 @@ function renderQuestoes() {
   });
 }
 
-/* ── REGISTRAR RESPOSTA ────────────────────────────────────────────────── */
 function responder(qNum, letra) {
   if (finalizado) return;
   respostas[qNum] = letra;
@@ -887,7 +844,6 @@ function responder(qNum, letra) {
   document.getElementById('alt-' + qNum + '-' + letra).classList.add('selecionada');
 }
 
-/* ── TOAST ─────────────────────────────────────────────────────────────── */
 function mostrarToast(msg, dur) {
   var t = document.getElementById('toast');
   t.textContent = msg;
@@ -895,9 +851,7 @@ function mostrarToast(msg, dur) {
   setTimeout(function() { t.classList.remove('show'); }, dur || 3000);
 }
 
-/* ── FINALIZAR ─────────────────────────────────────────────────────────── */
 function finalizarAtividade() {
-  // 🔧 Validação de turma antes de prosseguir
   var turma = document.getElementById('sel-turma').value;
   if (!turma) {
     mostrarToast('⚠️ Selecione a turma antes de enviar!');
@@ -911,14 +865,11 @@ function finalizarAtividade() {
     return;
   }
 
-  /* Verificar URL configurada */
   if (!SCRIPT_URL || SCRIPT_URL === 'COLE_AQUI_A_URL_DO_WEB_APP') {
     mostrarToast('⚠️ URL do servidor não configurada. Contate o professor.', 5000);
-    console.error('SCRIPT_URL não foi configurada. Substitua o placeholder pela URL do Web App publicado no Apps Script.');
     return;
   }
 
-  /* Verificar questões não respondidas */
   var naoRespondidas = QUESTOES.filter(function(q) { return !respostas[q.num]; });
   if (naoRespondidas.length > 0) {
     var nums = naoRespondidas.map(function(q) { return 'Q' + q.num; }).join(', ');
@@ -933,10 +884,9 @@ function finalizarAtividade() {
   btnFinalizar.disabled = true;
   btnFinalizar.textContent = '⏳ Enviando...';
 
-  /* Calcular resultado e mostrar feedback visual */
   var acertos = 0;
   QUESTOES.forEach(function(q) {
-    var resp   = respostas[q.num];
+    var resp    = respostas[q.num];
     var acertou = resp === q.gabarito;
     if (acertou) acertos++;
 
@@ -970,6 +920,9 @@ function finalizarAtividade() {
 
   exibirResultado(acertos, nota);
 
+  /* ✅ LKM: q.num = 21–30 → respostas[21..30] são as chaves corretas.
+     O Apps Script recebe q1=respostas[21], q2=respostas[22], ... q10=respostas[30]
+     e grava nas colunas Q21–Q30 da planilha. */
   enviarParaScript({
     sheetName:     '6o' + turma.replace('6','') + ' respostas LKM',
     studentName:   alunoAtual.nome,
@@ -993,7 +946,6 @@ function finalizarAtividade() {
   });
 }
 
-/* ── EXIBIR RESULTADO ──────────────────────────────────────────────────── */
 function exibirResultado(acertos, nota) {
   var total = QUESTOES.length;
   var pct   = acertos / total;
@@ -1008,8 +960,8 @@ function exibirResultado(acertos, nota) {
   else if (pct >= .5) { emoji = '👍'; msg = 'Bom desempenho! Continue estudando para melhorar.'; }
   else                { emoji = '📚'; msg = 'Continue estudando! A revisão vai te ajudar na Prova Paulista.'; }
 
-  document.getElementById('res-emoji').textContent    = emoji;
-  document.getElementById('res-msg').textContent      = msg;
+  document.getElementById('res-emoji').textContent = emoji;
+  document.getElementById('res-msg').textContent   = msg;
 
   document.getElementById('wrap-btn-finalizar').style.display = 'none';
   var telaRes = document.getElementById('tela-resultado');
@@ -1017,9 +969,6 @@ function exibirResultado(acertos, nota) {
   telaRes.scrollIntoView({behavior: 'smooth'});
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   ENVIO ÚNICO VIA JSONP — sem reenvio permitido
-══════════════════════════════════════════════════════════════════════ */
 function enviarParaScript(payload) {
   var statusEl = document.getElementById('res-email-status');
   var btnFinal = document.getElementById('btn-finalizar');
@@ -1030,8 +979,6 @@ function enviarParaScript(payload) {
   statusEl.textContent      = '📤 Enviando resultados...';
 
   var json = JSON.stringify(payload);
-
-  // btoa envolvido em try/catch para navegadores antigos
   var b64;
   try {
     b64 = btoa(unescape(encodeURIComponent(json)));
@@ -1040,15 +987,12 @@ function enviarParaScript(payload) {
     statusEl.style.color      = '#6b1010';
     statusEl.textContent      = '❌ Erro ao codificar dados. Contate o professor.';
     btnFinal.textContent      = '⛔ Enviado (erro local)';
-    // 🔒 BLOQUEIO: botão permanece desabilitado — sem reenvio
     return;
   }
 
-  // Chama JSONP diretamente, sem fetch no-cors duplicado
   confirmarViaJsonp(b64, statusEl, btnFinal, payload);
 }
 
-/* ── Envio e confirmação via JSONP ─────────────────────────────────────── */
 function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
   var cbName = 'cb_' + Date.now();
   var url    = SCRIPT_URL + '?callback=' + cbName + '&data=' + encodeURIComponent(b64);
@@ -1072,7 +1016,6 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
       btnFinal.textContent      = '⛔ Envio concluído (erro no servidor)';
       console.error('Apps Script retornou:', resp);
     }
-    // 🔒 BLOQUEIO: botão permanece desabilitado — sem reenvio em nenhum caso
   };
 
   var tag   = document.createElement('script');
@@ -1088,11 +1031,9 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
       btnFinal.textContent      = '⛔ Envio concluído';
       console.warn('JSONP onerror — possível bloqueio institucional SEDUC-SP.');
     }
-    // 🔒 BLOQUEIO: botão permanece desabilitado — sem reenvio
   };
   document.head.appendChild(tag);
 
-  /* Timeout de 25 segundos */
   setTimeout(function() {
     if (!done) {
       done = true;
@@ -1102,11 +1043,9 @@ function confirmarViaJsonp(b64, statusEl, btnFinal, payload) {
       statusEl.textContent      = '⏱️ Servidor demorou a responder. Contate o professor para confirmar.';
       btnFinal.textContent      = '⛔ Envio concluído (timeout)';
     }
-    // 🔒 BLOQUEIO: botão permanece desabilitado — sem reenvio
   }, 25000);
 }
 
-/* ── INIT ──────────────────────────────────────────────────────────────── */
 renderQuestoes();
 </script>
 </body>
